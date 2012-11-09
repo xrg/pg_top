@@ -18,13 +18,7 @@
 
 #define CURRENT_QUERY \
 		"SELECT query\n" \
-		"FROM pg_stat_activity\n" \
-		"WHERE procpid = %d;"
-
-#define CURRENT_QUERY_9_1 \
-		"SELECT query\n" \
-		"FROM pg_stat_activity\n" \
-		"WHERE pid = %d;"
+		"FROM pg_stat_get_activity(%d)"
 
 #define GET_LOCKS \
 		"SELECT datname, relname, mode, granted\n" \
@@ -762,16 +756,8 @@ pg_query(PGconn *pgconn, int procpid)
 	char *sql;
 	PGresult *pgresult;
 
-	if (pg_version(pgconn) >= 9.2)
-	{
-		sql = (char *) malloc(strlen(CURRENT_QUERY) + 7);
-		sprintf(sql, CURRENT_QUERY, procpid);
-	}
-	else
-	{
-		sql = (char *) malloc(strlen(CURRENT_QUERY_9_1) + 7);
-		sprintf(sql, CURRENT_QUERY_9_1, procpid);
-	}
+	sql = (char *) malloc(strlen(CURRENT_QUERY) + 7);
+	sprintf(sql, CURRENT_QUERY, procpid);
 	pgresult = PQexec(pgconn, sql);
 	free(sql);
 
