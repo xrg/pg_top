@@ -529,10 +529,13 @@ show_current_query(char *conninfo, int procpid)
 	{
 		pgresult = pg_query(pgconn, procpid);
 		rows = PQntuples(pgresult);
+		if (rows == 0)
+			display_pager("No rows!\n");
 	}
 	else
 	{
 		rows = 0;
+		display_pager("Connection failed!\n");
 	}
 	for (i = 0; i < rows; i++)
 	{
